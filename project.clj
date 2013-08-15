@@ -1,4 +1,4 @@
-(defproject baseet-twdb "0.1.0-SNAPSHOT"
+(defproject baseet-twdb "0.1.1-SNAPSHOT"
   :description "Simple library for accessing baseet tweets db"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"

@@ -146,14 +146,14 @@
                    (assoc :unique-score (generate-unique-score score %)))))))
 
 (defn too-old?
-  ([tweet-activity-view] (too-old? 3 tweet-activity-view))
+  ([tweet-activity-view] (too-old? 1 tweet-activity-view))
   ([days tweet-activity-view]
   ((complement clj-time/within?)
           (clj-time/interval (-> days clj-time/days clj-time/ago) (clj-time/now))
           (coerce/from-string tweet-activity-view))))
 
 (defn mark-old-tweets-for-deletion
-  "Get rid of : unread tweets older than 15 days and read tweets older than 3 days
+  "Get rid of : unread tweets older than 15 days and read tweets older than 1 day
   from db. Use the by-list view in order to get all the tweets from a given list"
   [db-params list-id]
   (let [db-name (:db-name db-params)
@@ -163,13 +163,13 @@
                                   (-> db-params :views :tweets :view-name keyword)
                                   {:key (str list-id)}))]
     (if-let [old-tweets (and (seq db-tw-activity-view)
-                             (seq (->> db-tw-activity-view 
+                             (seq (->> db-tw-activity-view
                                        ;; delete all tweets older than 15 days
                                        (filter (comp (partial too-old? 15)
                                                      (comp :last-activity :value)))
                                        ;; get tweets that were marked read
                                        (filter (comp false? :unread :value))
-                                       ;; delete tweets which were read older than 3 days
+                                       ;; delete tweets which were read older than 1 day
                                        (filter (comp too-old? (comp :last-activity :value))))))]
       (map #(as-> % _
               (assoc _ :_rev (-> _ :value :_rev))
